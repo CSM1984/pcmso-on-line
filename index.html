@@ -2359,9 +2359,14 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
                 `;
 
                 // Adicionar dados dos GHEs na tabela
-                if (empresa.ghe) {
-                    Object.keys(empresa.ghe).forEach(gheNome => {
-                        const ghe = empresa.ghe[gheNome];
+              if (empresa.ghe) {
+    Object.keys(empresa.ghe).sort((a, b) => {
+        // Pegar só os números, ignorando TUDO o resto
+        const numeroA = parseInt(a.replace(/[^\d]/g, '')) || 999;
+        const numeroB = parseInt(b.replace(/[^\d]/g, '')) || 999;
+        return numeroA - numeroB;
+    }).forEach(gheNome => {
+        const ghe = empresa.ghe[gheNome];
                         
                         html += `
                             <tr style="border-bottom: 1px solid #dee2e6;">
