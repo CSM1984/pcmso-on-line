@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema GHE - Grades de Exames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #68df81 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Estilos do Login */
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 10vh;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            color: #2d6812;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: #6c757d;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2d6812;
+            box-shadow: 0 0 0 3px rgba(45, 104, 18, 0.1);
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #2d6812 0%, #4f9974 100%);
+            color: white;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(45, 104, 18, 0.4);
+        }
+
+        .error-message, .success-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .link-toggle {
+            color: #2d6812;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .link-toggle:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilos do Sistema Principal */
+        .sistema-principal {
+            display: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e7508e0 0%, #268f26e3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .user-info-header {
+            position: absolute;
+            top: 15px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .search-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box input, .search-box select {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input:focus, .search-box select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2d6812 0%, #4f9974d0 100%);
+            color: rgb(255, 255, 255);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            color: black;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(247, 151, 30, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 65, 108, 0.4);
+        }
+
+        /* Estilo para usuários de recepção - ocultar botões de edição */
+        .recepcao-mode .btn-warning,
+        .recepcao-mode .btn-danger,
+        .recepcao-mode .form-section {
+            display: none !important;
+        }
+
+        .access-denied {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .ghes-container {
+            margin-top: 30px;
+        }
+
+        .ghes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ghe-dinamico {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .ghe-dinamico-header {
+            background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
+            color: white;
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ghe-dinamico-header input {
+            background: white;
+            color: #495057;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-remove-ghe {
+            background: #eb1515;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-remove-ghe:hover {
+            background: #c82333;
+        }
+
+        .perigo-section {
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .perigo-header {
+            padding: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .perigo-header:hover {
+            opacity: 0.9;
+        }
+
+        .perigo-header input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+
+        .perigo-acidentes { background: #1975c5 !important; color: white; }
+        .perigo-ergonomicos { background: #f3f703 !important; color: black; }
+        .perigo-fisicos { background: #2ab817 !important; color: white; }
+        .perigo-biologicos { background: #ce7815 !important; color: white; }
+        .perigo-quimicos { background: #f50202 !important; color: white; }
+
+        .riscos-section {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid rgba(255, 255, 255, 0.397);
+        }
+
+        .riscos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .risco-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .risco-item input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.1);
+        }
+
+        .risco-item:hover {
+            background: #e9ecef;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .exames-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .exame-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .exame-group h4 {
+            margin-bottom: 10px;
+            color: #495057;
+            text-align: center;
+        }
+
+        .exame-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .exame-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .exame-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .orientacoes-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .orientacoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+
+        .orientacao-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            border-left: 3px solid #2196f3;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .empresa-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .empresa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .empresa-info h3 {
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .empresa-info p {
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .ghe-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .ghe-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .ghe-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .perigos-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .perigo-badge {
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .exames-list {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .riscos-detalhes {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .grade-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .grade-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 95%;
+            max-width: 1400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .grade-header {
+            background: linear-gradient(135deg, #0a4e19 0%, #208028 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grade-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .grade-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-close {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-print {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .grade-body {
+            padding: 30px;
+            background: white;
+        }
+
+        .grade-empresa-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .grade-empresa-info h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .grade-empresa-info p {
+            color: #6c757d;
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+
+        .grade-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 12px;
+            background: white;
+        }
+
+        .grade-table th,
+        .grade-table td {
+            border: 2px solid #495057;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .grade-table th {
+            background: #495057;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .grade-table .ghe-header {
+            background: #6c757d;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            text-align: left;
+            padding: 12px 8px;
+        }
+
+        .grade-table .perigo-cell {
+            font-size: 10px;
+            line-height: 1.2;
+            max-width: 120px;
+            word-wrap: break-word;
+        }
+
+        .grade-table .exame-cell {
+            font-size: 10px;
+            line-height: 1.3;
+            text-align: left;
+            padding: 6px;
+            max-width: 100px;
+        }
+
+        .periodicidade-info {
+            font-size: 10px;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 3px;
+        }
+
+        @media print {
+            .grade-modal {
+                display: block !important;
+                position: static;
+                background: white;
+            }
+            
+            .grade-header {
+                background: #1e3c72 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .grade-actions,
+            .btn-close,
+            .btn-print {
+                display: none !important;
+            }
+            
+            .grade-content {
+                width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+            
+            .grade-table th,
+            .grade-table td {
+                border: 2px solid #000 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .grade-table th {
+                background: #495057 !important;
+                color: white !important;
+            }
+            
+            .ghe-header {
+                background: #6c757d !important;
+                color: white !important;
+            }
+            
+            .perigo-acidentes { background-color: #2b1fd4 !important; color: white !important; }
+            .perigo-ergonomicos { background-color: #f8f400 !important; color: black !important; }
+            .perigo-fisicos { background-color: #54c022 !important; color: white !important; }
+            .perigo-biologicos { background-color: #a76c28 !important; color: white !important; }
+            .perigo-quimicos { background-color: #f51717 !important; color: white !important; }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input, .search-box select {
+                min-width: 100%;
+            }
+
+            .empresa-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-info-header {
+                position: static;
+                margin-bottom: 20px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-container" id="loginContainer">
+        <div class="logo">🏥</div>
+        <h1 class="login-title">Sistema GHE</h1>
+        <p class="login-subtitle">Gerenciamento de Grades de Exames por Grupo Homogêneo de Exposição</p>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Formulário de Login -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Usuário:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="btn-auth btn-login">🔐 Entrar</button>
+        </form>
+
+        <p>Não tem conta? <span class="link-toggle" onclick="toggleRegister()">Cadastre-se aqui</span></p>
+
+        <!-- Formulário de Registro -->
+        <form id="registerForm" style="display: none;">
+            <div class="form-group">
+                <label for="regName">Nome Completo:</label>
+                <input type="text" id="regName" required>
+            </div>
+            <div class="form-group">
+                <label for="regUsername">Usuário:</label>
+                <input type="text" id="regUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Senha:</label>
+                <input type="password" id="regPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="regRole">Tipo de Acesso:</label>
+                <select id="regRole" required>
+                    <option value="">Selecione o tipo de acesso</option>
+                    <option value="recepcao">Recepção/Consulta</option>
+                    <option value="gestao">Gestão Completa</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-auth btn-login">👤 Cadastrar</button>
+        </form>
+
+        <p id="backToLogin" style="display: none;">Já tem conta? <span class="link-toggle" onclick="toggleRegister()">Faça login aqui</span></p>
+        
+        <div style="margin-top: 30px; padding: 15px; background: #e3f2fd; border-radius: 8px; font-size: 14px;">
+            <p><strong>👤 Login de consulta:</strong></p>
+            <p><strong>Recepção:</strong> recepcao / recepcao123</p>
+        </div>
+    </div>
+
+    <!-- Sistema Principal -->
+    <div class="sistema-principal" id="sistemaPrincipal">
+        <div class="container">
+            <div class="header">
+                <div class="user-info-header">
+                    <div class="user-avatar">👤</div>
+                    <div>
+                        <div id="userName" style="font-weight: 600; font-size: 14px;">Usuário</div>
+                        <small id="userRole">Nível de Acesso</small>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">🚪 Sair</button>
+                </div>
+                <h1>📋 Sistema GHE</h1>
+                <p>Gerenciamento de Grades de Exames por Grupo Homogêneo de Exposição</p>
+            </div>
+
+            <div class="main-content" id="mainContent">
+                <!-- Seção de Busca -->
+                <div class="search-section">
+                    <h2 style="margin-bottom: 20px; color: #495057;">🔍 Pesquisar Empresas</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchCNPJ" placeholder="CNPJ da empresa">
+                        <input type="text" id="searchEmpresa" placeholder="Nome da empresa">
+                        <button class="btn btn-primary" onclick="pesquisarEmpresas()">Buscar</button>
+                        <button class="btn btn-success" onclick="toggleFormCadastro()" id="btnNovaEmpresa">➕ Nova Empresa</button>
+                    </div>
+                </div>
+
+                <!-- Formulário de Cadastro -->
+                <div class="form-section" id="formCadastro">
+                    <h2 style="margin-bottom: 20px; color: #495057;" id="formTitle">➕ Cadastrar Nova Empresa</h2>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>CNPJ*</label>
+                            <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nome da Empresa*</label>
+                            <input type="text" id="nomeEmpresa" placeholder="Nome da empresa" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data de Elaboração do PCMSO*</label>
+                            <input type="date" id="dataElaboracao" required>
+                        </div>
+                    </div>
+
+                    <!-- Seção de GHEs -->
+                    <div class="ghes-container" id="ghesContainer">
+                        <div class="ghes-header">
+                            <h3 style="color: #495057;">📋 Grupos Homogêneos de Exposição (GHE)</h3>
+                            <button type="button" class="btn btn-success" onclick="adicionarGHE()">➕ Adicionar GHE</button>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-success" onclick="salvarEmpresa()" id="btnSalvar">💾 Salvar Empresa</button>
+                        <button class="btn btn-danger" onclick="cancelarCadastro()">❌ Cancelar</button>
+                    </div>
+                </div>
+
+                <!-- Resultados da Pesquisa -->
+                <div class="results-section" id="resultsSection"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal da Grade de Exames -->
+    <div id="gradeModal" class="grade-modal">
+        <div class="grade-content">
+            <div class="grade-header">
+                <h2>📋 Grade de Exames Ocupacionais</h2>
+                <div class="grade-actions">
+                    <button class="btn-print" onclick="imprimirGrade()">🖨️ Imprimir</button>
+                    <button class="btn-close" onclick="fecharGrade()">✖️ Fechar</button>
+                </div>
+            </div>
+            <div class="grade-body" id="gradeBody">
+                <!-- Conteúdo da grade será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+   import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBCXcb0eNUHUJ6B_7gTTwOVhjravtDbSiU",
+        authDomain: "pcmso-app.firebaseapp.com",
+        projectId: "pcmso-app",
+        storageBucket: "pcmso-app.firebasestorage.app",
+        messagingSenderId: "656613418231",
+        appId: "1:656613418231:web:7e2c1a260bde1f2cacdff2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Tornar funções globais para usar no resto do código
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDocs = getDocs;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.deleteDoc = deleteDoc;
+    window.query = query;
+    window.where = where;
+    window.orderBy = orderBy;
+</script>
+
+    <script>
+        // Variáveis globais
+        let contadorGHE = 0;
+        let modoEdicao = false;
+        let empresaEditando = null;
+        let currentUser = null;
+
+        // Sistema de usuários em memória
+        // Sistema de usuários da empresa - Gerenciado pela administração
+        let usuarios = [
+            // 🏢 DIRETORIA - Acesso Completo
+            { 
+                username: 'felipe', 
+                password: 'felipe123', 
+                name: 'Felipe', 
+                role: 'gestao', 
+                email: 'felipe@empresa.com',
+                setor: 'Diretoria'
+            },
+            { 
+                username: 'matheus', 
+                password: 'matheus123', 
+                name: 'Matheus', 
+                role: 'gestao', 
+                email: 'matheus@empresa.com',
+                setor: 'Diretoria'
+            },
+            { 
+                username: 'ciro', 
+                password: 'ciro123', 
+                name: 'Ciro', 
+                role: 'gestao', 
+                email: 'ciro@empresa.com',
+                setor: 'Diretoria'
+            },
+            
+            // 📞 RECEPÇÃO - Acesso Limitado (Apenas Consulta)
+            { 
+                username: 'recepcao', 
+                password: 'recepcao123', 
+                name: 'Recepcionista', 
+                role: 'recepcao', 
+                email: 'recepcao@empresa.com',
+                setor: 'Recepção'
+            }
+        ];
+
+        // ===== SISTEMA DE LOGIN =====
+        function toggleRegister() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const backToLogin = document.getElementById('backToLogin');
+            const loginText = document.querySelector('#loginContainer p');
+
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                backToLogin.style.display = 'none';
+                loginText.style.display = 'block';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                backToLogin.style.display = 'block';
+                loginText.style.display = 'none';
+            }
+        }
+
+        function showMessage(message, type = 'error') {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            if (type === 'error') {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+            } else {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+            }
+
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const user = usuarios.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                showMessage('Login realizado com sucesso!', 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('sistemaPrincipal').style.display = 'block';
+                    
+                    // Configurar interface baseada no nível de acesso
+                    configurarInterface(user);
+                    pesquisarEmpresas();
+                }, 1000);
+            } else {
+                showMessage('Usuário ou senha incorretos!');
+            }
+        });
+
+        // Registro
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('regName').value;
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+
+            // Verificar se usuário já existe
+            if (usuarios.find(u => u.username === username)) {
+                showMessage('Nome de usuário já existe!');
+                return;
+            }
+
+            if (usuarios.find(u => u.email === email)) {
+                showMessage('Email já cadastrado!');
+                return;
+            }
+
+            // Adicionar novo usuário
+            const newUser = { username, password, name, role, email };
+            usuarios.push(newUser);
+            
+            showMessage('Usuário cadastrado com sucesso!', 'success');
+            
+            setTimeout(() => {
+                toggleRegister();
+                document.getElementById('registerForm').reset();
+            }, 2000);
+        });
+
+        function configurarInterface(user) {
+            document.getElementById('userName').textContent = user.name;
+            
+            if (user.role === 'recepcao') {
+                document.getElementById('userRole').textContent = 'Recepção/Consulta';
+                document.getElementById('mainContent').classList.add('recepcao-mode');
+                
+                // Ocultar botão de nova empresa para recepção
+                document.getElementById('btnNovaEmpresa').style.display = 'none';
+                
+                // Adicionar aviso para usuários de recepção
+                const mainContent = document.getElementById('mainContent');
+                const avisoRecepcao = document.createElement('div');
+                avisoRecepcao.className = 'access-denied';
+                avisoRecepcao.innerHTML = `
+                    <h4>📋 Modo Consulta Ativado</h4>
+                    <p>Você tem acesso de <strong>consulta e visualização</strong>. Para editar ou cadastrar empresas, entre em contato com a administração.</p>
+                `;
+                mainContent.insertBefore(avisoRecepcao, mainContent.firstChild);
+                
+            } else {
+                document.getElementById('userRole').textContent = 'Gestão Completa';
+                document.getElementById('mainContent').classList.remove('recepcao-mode');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            
+            document.getElementById('sistemaPrincipal').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            
+            // Limpar formulários
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+            
+            // Remover classes e elementos específicos
+            document.getElementById('mainContent').classList.remove('recepcao-mode');
+            const avisoRecepcao = document.querySelector('.access-denied');
+            if (avisoRecepcao) {
+                avisoRecepcao.remove();
+            }
+            
+            showMessage('Logout realizado com sucesso!', 'success');
+        }
+
+        // ===== SISTEMA GHE ORIGINAL =====
+        function toggleFormCadastro() {
+            // Verificar se é usuário de recepção
+            if (currentUser && currentUser.role === 'recepcao') {
+                showMessage('Acesso negado! Você tem permissão apenas para consulta.');
+                return;
+            }
+
+            const form = document.getElementById('formCadastro');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            
+            if (form.style.display === 'block') {
+                limparFormulario();
+                // Adicionar o primeiro GHE automaticamente
+                setTimeout(() => {
+                    adicionarGHE();
+                }, 100);
+            }
+        }
+
+        function editarEmpresa(empresaId) {
+            // Verificar se é usuário de recepção
+            if (currentUser && currentUser.role === 'recepcao') {
+                showMessage('Acesso negado! Você tem permissão apenas para consulta.');
+                return;
+            }
+
+            modoEdicao = true;
+            empresaEditando = empresaId;
+            
+            // Buscar dados da empresa no Firebase
+            carregarEmpresaParaEdicao(empresaId);
+            
+            document.getElementById('formTitle').textContent = '✏️ Editar Empresa';
+            document.getElementById('btnSalvar').innerHTML = '💾 Atualizar Empresa';
+            document.getElementById('formCadastro').style.display = 'block';
+        }
+
+        async function carregarEmpresaParaEdicao(empresaId) {
+            try {
+                const empresasCol = collection(db, 'empresas');
+                const empresasSnapshot = await getDocs(empresasCol);
+                
+                empresasSnapshot.forEach((docSnap) => {
+                    if (docSnap.id === empresaId) {
+                        const empresa = docSnap.data();
+                        
+                        // Preencher campos básicos
+                        document.getElementById('cnpj').value = empresa.cnpj || '';
+                        document.getElementById('nomeEmpresa').value = empresa.nome || '';
+                        document.getElementById('dataElaboracao').value = empresa.dataElaboracao || '';
+                        
+                        // Desabilitar CNPJ durante edição
+                        document.getElementById('cnpj').disabled = true;
+                        
+                        // Limpar GHEs existentes
+                        const ghesContainer = document.getElementById('ghesContainer');
+                        const gheDinamicos = ghesContainer.querySelectorAll('.ghe-dinamico');
+                        gheDinamicos.forEach(ghe => ghe.remove());
+                        contadorGHE = 0;
+                        
+                        // Adicionar GHEs salvos
+                        if (empresa.ghe) {
+                            Object.keys(empresa.ghe).forEach(nomeGHE => {
+                                adicionarGHE();
+                                preencherGHE(contadorGHE, nomeGHE, empresa.ghe[nomeGHE]);
+                            });
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao carregar empresa:', error);
+                showMessage('Erro ao carregar dados da empresa!');
+            }
+        }
+
+        function preencherGHE(gheId, nomeGHE, dadosGHE) {
+            // Preencher nome do GHE
+            document.getElementById(`nome_ghe_${gheId}`).value = nomeGHE;
+            
+            // Preencher perigos
+            if (dadosGHE.perigos) {
+                dadosGHE.perigos.forEach(perigo => {
+                    const checkbox = document.getElementById(`perigo_${perigo}_${gheId}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        toggleRiscosSection(perigo, gheId);
+                    }
+                });
+            }
+            
+            // Preencher riscos específicos
+            if (dadosGHE.riscos) {
+                Object.keys(dadosGHE.riscos).forEach(tipoPerigo => {
+                    const riscosDoTipo = dadosGHE.riscos[tipoPerigo];
+                    
+                    if (riscosDoTipo.especificos) {
+                        riscosDoTipo.especificos.forEach(risco => {
+                            const checkbox = document.getElementById(`risco_${tipoPerigo}_${risco.tipo}_${gheId}`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                            }
+                        });
+                    }
+                    
+                    if (riscosDoTipo.outros) {
+                        const textarea = document.getElementById(`outros_${tipoPerigo}_${gheId}`);
+                        if (textarea) {
+                            textarea.value = riscosDoTipo.outros;
+                        }
+                    }
+                });
+            }
+            
+            // Preencher exames
+            if (dadosGHE.exames) {
+                Object.keys(dadosGHE.exames).forEach(tipoExame => {
+                    const exameData = dadosGHE.exames[tipoExame];
+                    
+                    if (exameData.exames) {
+                        // Mapear exames para os checkboxes correspondentes
+                        const examesMap = {
+                            'admissional': {
+                                'Exame Clínico Ocupacional': `exam_adm_clinico_${gheId}`,
+                                'Audiometria Tonal': `exam_adm_audio_${gheId}`,
+                                'Acuidade Visual': `exam_adm_acuidade_${gheId}`,
+                                'Eletrocardiograma': `exam_adm_eletro_${gheId}`,
+                                'Raio X Tórax': `exam_adm_raio_${gheId}`,
+                                'Espirometria': `exam_adm_espiro_${gheId}`,
+                                'Hemograma Completo': `exam_adm_hemograma_${gheId}`
+                            },
+                            'periodico': {
+                                'Exame Clínico Ocupacional': `exam_per_clinico_${gheId}`,
+                                'Audiometria Tonal': `exam_per_audio_${gheId}`,
+                                'Acuidade Visual': `exam_per_acuidade_${gheId}`,
+                                'Eletrocardiograma': `exam_per_eletro_${gheId}`,
+                                'Espirometria': `exam_per_espiro_${gheId}`,
+                                'Exames Laboratoriais': `exam_per_sangue_${gheId}`
+                            },
+                            'retorno': {
+                                'Exame Clínico Ocupacional': `exam_ret_clinico_${gheId}`,
+                                'Exames Complementares Específicos': `exam_ret_complementares_${gheId}`,
+                                'Avaliações Especializadas': `exam_ret_avaliacoes_${gheId}`
+                            },
+                            'mudanca': {
+                                'Realizar exames da periodicidade "Demissional"': `exam_mud_periodico_${gheId}`,
+                                'Acrescentar exames do novo GHE': `exam_mud_adicionar_${gheId}`,
+                                'Exames específicos para nova função': `exam_mud_especifico_${gheId}`
+                            },
+                            'demissional': {
+                                'Exame Clínico Ocupacional': `exam_dem_clinico_${gheId}`,
+                                'Audiometria Tonal': `exam_dem_audio_${gheId}`,
+                                'Exames Complementares': `exam_dem_complementares_${gheId}`
+                            }
+                        };
+                        
+                        if (examesMap[tipoExame]) {
+                            exameData.exames.forEach(exame => {
+                                const checkboxId = examesMap[tipoExame][exame];
+                                if (checkboxId) {
+                                    const checkbox = document.getElementById(checkboxId);
+                                    if (checkbox) {
+                                        checkbox.checked = true;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    
+                    // Preencher periodicidade
+                    if (tipoExame === 'periodico' && exameData.periodicidade) {
+                        const selectPeriodicidade = document.getElementById(`periodicidade_exames_${gheId}`);
+                        if (selectPeriodicidade) {
+                            selectPeriodicidade.value = exameData.periodicidade;
+                        }
+                    }
+                    
+                    // Preencher "outros exames"
+                    if (exameData.outros) {
+                        const textarea = document.getElementById(`outros_exames_${tipoExame.substr(0, 3)}_${gheId}`);
+                        if (textarea) {
+                            textarea.value = exameData.outros;
+                        }
+                    }
+                });
+            }
+        }
+
+        function cancelarCadastro() {
+            document.getElementById('formCadastro').style.display = 'none';
+            limparFormulario();
+            resetarModoEdicao();
+        }
+
+        function resetarModoEdicao() {
+            modoEdicao = false;
+            empresaEditando = null;
+            document.getElementById('formTitle').textContent = '➕ Cadastrar Nova Empresa';
+            document.getElementById('btnSalvar').innerHTML = '💾 Salvar Empresa';
+            document.getElementById('cnpj').disabled = false;
+        }
+
+        function limparFormulario() {
+            document.getElementById('cnpj').value = '';
+            document.getElementById('nomeEmpresa').value = '';
+            document.getElementById('dataElaboracao').value = '';
+            
+            // Limpar container de GHEs
+            const ghesContainer = document.getElementById('ghesContainer');
+            const gheDinamicos = ghesContainer.querySelectorAll('.ghe-dinamico');
+            gheDinamicos.forEach(ghe => ghe.remove());
+            
+            // Resetar contador
+            contadorGHE = 0;
+        }
+
+        function adicionarGHE() {
+            contadorGHE++;
+            const gheContainer = document.getElementById('ghesContainer');
+            
+            const gheDiv = document.createElement('div');
+            gheDiv.className = 'ghe-dinamico';
+            gheDiv.id = `ghe_${contadorGHE}`;
+            gheDiv.innerHTML = criarTemplateGHE(contadorGHE);
+            
+            gheContainer.appendChild(gheDiv);
+        }
+
+        function criarTemplateGHE(numero) {
+            return `
+                <div class="ghe-dinamico-header">
+                    <input type="text" placeholder="Ex: GHE ${numero} - NOME DO GRUPO" id="nome_ghe_${numero}" required>
+                    <button type="button" class="btn-remove-ghe" onclick="removerGHE(${numero})">🗑️ Remover</button>
+                </div>
+                
+                <h4 style="margin-bottom: 15px; color: #495057;">Perigos Identificados e Riscos:</h4>
+                
+                <!-- Perigos de Acidentes -->
+                <div class="perigo-section">
+                    <div class="perigo-header perigo-acidentes">
+                        <input type="checkbox" id="perigo_acidentes_${numero}" value="acidentes" onchange="toggleRiscosSection('acidentes', ${numero})">
+                        <label for="perigo_acidentes_${numero}">Perigos de acidentes</label>
+                    </div>
+                    <div class="riscos-section" id="riscos_acidentes_${numero}" style="display: none;">
+                        <div class="riscos-grid">
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_acidentes_queda_${numero}" value="queda">
+                                <label for="risco_acidentes_queda_${numero}">Queda de mesmo nível</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_acidentes_corte_${numero}" value="corte">
+                                <label for="risco_acidentes_corte_${numero}">Cortes</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_acidentes_choque_${numero}" value="choque">
+                                <label for="risco_acidentes_choque_${numero}">Choque elétrico</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_acidentes_incendio_${numero}" value="incendio">
+                                <label for="risco_acidentes_incendio_${numero}">Incêndio</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outros riscos de acidentes:</label>
+                            <textarea id="outros_acidentes_${numero}" placeholder="Descreva outros riscos de acidentes..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perigos Ergonômicos -->
+                <div class="perigo-section">
+                    <div class="perigo-header perigo-ergonomicos">
+                        <input type="checkbox" id="perigo_ergonomicos_${numero}" value="ergonomicos" onchange="toggleRiscosSection('ergonomicos', ${numero})">
+                        <label for="perigo_ergonomicos_${numero}">Perigos ergonômicos</label>
+                    </div>
+                    <div class="riscos-section" id="riscos_ergonomicos_${numero}" style="display: none;">
+                        <div class="riscos-grid">
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_ergonomicos_postural_${numero}" value="postural">
+                                <label for="risco_ergonomicos_postural_${numero}">Postural estático</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_ergonomicos_repetitivo_${numero}" value="repetitivo">
+                                <label for="risco_ergonomicos_repetitivo_${numero}">Movimentos repetitivos</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_ergonomicos_carga_${numero}" value="carga">
+                                <label for="risco_ergonomicos_carga_${numero}">Levantamento de peso</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_ergonomicos_mental_${numero}" value="mental">
+                                <label for="risco_ergonomicos_mental_${numero}">Carga mental</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outros riscos ergonômicos:</label>
+                            <textarea id="outros_ergonomicos_${numero}" placeholder="Descreva outros riscos ergonômicos..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perigos Físicos -->
+                <div class="perigo-section">
+                    <div class="perigo-header perigo-fisicos">
+                        <input type="checkbox" id="perigo_fisicos_${numero}" value="fisicos" onchange="toggleRiscosSection('fisicos', ${numero})">
+                        <label for="perigo_fisicos_${numero}">Perigos físicos</label>
+                    </div>
+                    <div class="riscos-section" id="riscos_fisicos_${numero}" style="display: none;">
+                        <div class="riscos-grid">
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_fisicos_ruido_${numero}" value="ruido">
+                                <label for="risco_fisicos_ruido_${numero}">Ruído</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_fisicos_temperatura_${numero}" value="temperatura">
+                                <label for="risco_fisicos_temperatura_${numero}">Temperatura extrema</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_fisicos_vibracao_${numero}" value="vibracao">
+                                <label for="risco_fisicos_vibracao_${numero}">Vibração</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_fisicos_radiacao_${numero}" value="radiacao">
+                                <label for="risco_fisicos_radiacao_${numero}">Radiação não ionizante</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outros riscos físicos:</label>
+                            <textarea id="outros_fisicos_${numero}" placeholder="Descreva outros riscos físicos..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perigos Biológicos -->
+                <div class="perigo-section">
+                    <div class="perigo-header perigo-biologicos">
+                        <input type="checkbox" id="perigo_biologicos_${numero}" value="biologicos" onchange="toggleRiscosSection('biologicos', ${numero})">
+                        <label for="perigo_biologicos_${numero}">Perigos biológicos</label>
+                    </div>
+                    <div class="riscos-section" id="riscos_biologicos_${numero}" style="display: none;">
+                        <div class="riscos-grid">
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_biologicos_bacteria_${numero}" value="bacteria">
+                                <label for="risco_biologicos_bacteria_${numero}">Bactérias</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_biologicos_virus_${numero}" value="virus">
+                                <label for="risco_biologicos_virus_${numero}">Vírus</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_biologicos_fungo_${numero}" value="fungo">
+                                <label for="risco_biologicos_fungo_${numero}">Fungos</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_biologicos_parasita_${numero}" value="parasita">
+                                <label for="risco_biologicos_parasita_${numero}">Parasitas</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outros riscos biológicos:</label>
+                            <textarea id="outros_biologicos_${numero}" placeholder="Descreva outros riscos biológicos..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Perigos Químicos -->
+                <div class="perigo-section">
+                    <div class="perigo-header perigo-quimicos">
+                        <input type="checkbox" id="perigo_quimicos_${numero}" value="quimicos" onchange="toggleRiscosSection('quimicos', ${numero})">
+                        <label for="perigo_quimicos_${numero}">Perigos químicos</label>
+                    </div>
+                    <div class="riscos-section" id="riscos_quimicos_${numero}" style="display: none;">
+                        <div class="riscos-grid">
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_quimicos_poeira_${numero}" value="poeira">
+                                <label for="risco_quimicos_poeira_${numero}">Poeira mineral</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_quimicos_vapores_${numero}" value="vapores">
+                                <label for="risco_quimicos_vapores_${numero}">Vapores orgânicos</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_quimicos_gases_${numero}" value="gases">
+                                <label for="risco_quimicos_gases_${numero}">Gases tóxicos</label>
+                            </div>
+                            <div class="risco-item">
+                                <input type="checkbox" id="risco_quimicos_nevoas_${numero}" value="nevoas">
+                                <label for="risco_quimicos_nevoas_${numero}">Névoas</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Outros riscos químicos:</label>
+                            <textarea id="outros_quimicos_${numero}" placeholder="Descreva outros riscos químicos..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; color: #495057;">Exames por Periodicidade:</h4>
+                <div class="exames-section">
+                    <div class="exame-group">
+                        <h4>ADMISSIONAL</h4>
+                        <div class="exame-list">
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_clinico_${numero}" value="Exame Clínico Ocupacional">
+                                <label for="exam_adm_clinico_${numero}">Exame Clínico Ocupacional</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_audio_${numero}" value="Audiometria Tonal">
+                                <label for="exam_adm_audio_${numero}">Audiometria Tonal</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_acuidade_${numero}" value="Acuidade Visual">
+                                <label for="exam_adm_acuidade_${numero}">Acuidade Visual</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_eletro_${numero}" value="Eletrocardiograma">
+                                <label for="exam_adm_eletro_${numero}">Eletrocardiograma</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_raio_${numero}" value="Raio X Tórax">
+                                <label for="exam_adm_raio_${numero}">Raio X Tórax</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_espiro_${numero}" value="Espirometria">
+                                <label for="exam_adm_espiro_${numero}">Espirometria</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_adm_hemograma_${numero}" value="Hemograma Completo">
+                                <label for="exam_adm_hemograma_${numero}">Hemograma Completo</label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Outros exames admissionais:</label>
+                            <textarea id="outros_exames_adm_${numero}" placeholder="Digite outros exames necessários, separados por vírgula..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="exame-group">
+                        <h4>PERIÓDICO</h4>
+                        <div class="exame-list">
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_per_clinico_${numero}" value="Exame Clínico Ocupacional">
+                                <label for="exam_per_clinico_${numero}">Exame Clínico Ocupacional</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_per_audio_${numero}" value="Audiometria Tonal">
+                                <label for="exam_per_audio_${numero}">Audiometria Tonal</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_per_acuidade_${numero}" value="Acuidade Visual">
+                                <label for="exam_per_acuidade_${numero}">Acuidade Visual</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_per_eletro_${numero}" value="Eletrocardiograma">
+                                <label for="exam_per_eletro_${numero}">Eletrocardiograma</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_per_espiro_${numero}" value="Espirometria">
+                                <label for="exam_per_espiro_${numero}">Espirometria</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_per_sangue_${numero}" value="Exames Laboratoriais">
+                                <label for="exam_per_sangue_${numero}">Exames Laboratoriais</label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Periodicidade dos exames:</label>
+                            <select id="periodicidade_exames_${numero}">
+                                <option value="anual">Anual</option>
+                                <option value="semestral">Semestral</option>
+                                <option value="bienal">Bienal</option>
+                                <option value="personalizada">Personalizada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Outros exames periódicos:</label>
+                            <textarea id="outros_exames_per_${numero}" placeholder="Digite outros exames necessários, separados por vírgula..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="exame-group">
+                        <h4>RETORNO AO TRABALHO</h4>
+                        <div class="exame-list">
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_ret_clinico_${numero}" value="Exame Clínico Ocupacional">
+                                <label for="exam_ret_clinico_${numero}">Exame Clínico Ocupacional</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_ret_complementares_${numero}" value="Exames Complementares Específicos">
+                                <label for="exam_ret_complementares_${numero}">Exames Complementares Específicos</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_ret_avaliacoes_${numero}" value="Avaliações Especializadas">
+                                <label for="exam_ret_avaliacoes_${numero}">Avaliações Especializadas</label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Outros exames para retorno:</label>
+                            <textarea id="outros_exames_ret_${numero}" placeholder="Digite outros exames necessários, separados por vírgula..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="exame-group">
+                        <h4>MUDANÇA DE RISCO OCUPACIONAL</h4>
+                        <div class="exame-list">
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_mud_periodico_${numero}" value="Realizar exames da periodicidade Demissional">
+                                <label for="exam_mud_periodico_${numero}">Realizar exames da periodicidade "Demissional"</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_mud_adicionar_${numero}" value="Acrescentar exames do novo GHE">
+                                <label for="exam_mud_adicionar_${numero}">Acrescentar exames do novo GHE</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_mud_especifico_${numero}" value="Exames específicos para nova função">
+                                <label for="exam_mud_especifico_${numero}">Exames específicos para nova função</label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Outros exames para mudança de risco:</label>
+                            <textarea id="outros_exames_mud_${numero}" placeholder="Digite outros exames necessários, separados por vírgula..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="exame-group">
+                        <h4>DEMISSIONAL</h4>
+                        <div class="exame-list">
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_dem_clinico_${numero}" value="Exame Clínico Ocupacional">
+                                <label for="exam_dem_clinico_${numero}">Exame Clínico Ocupacional</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_dem_audio_${numero}" value="Audiometria Tonal">
+                                <label for="exam_dem_audio_${numero}">Audiometria Tonal</label>
+                            </div>
+                            <div class="exame-item">
+                                <input type="checkbox" id="exam_dem_complementares_${numero}" value="Exames Complementares">
+                                <label for="exam_dem_complementares_${numero}">Exames Complementares</label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Outros exames demissionais:</label>
+                            <textarea id="outros_exames_dem_${numero}" placeholder="Digite outros exames necessários, separados por vírgula..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Orientações por Risco -->
+                <div class="orientacoes-section" style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px; color: #495057;">💡 Orientações de Exames por Risco:</h4>
+                    <div class="orientacoes-grid">
+                        <div class="orientacao-item">
+                            <strong>Ruído:</strong> Audiometria Tonal obrigatória (admissional, periódica anual, demissional)
+                        </div>
+                        <div class="orientacao-item">
+                            <strong>Químicos/Poeiras:</strong> Espirometria, Raio X Tórax, Exames Laboratoriais
+                        </div>
+                        <div class="orientacao-item">
+                            <strong>Biológicos:</strong> Hemograma, Exames sorológicos específicos
+                        </div>
+                        <div class="orientacao-item">
+                            <strong>Ergonômicos:</strong> Avaliação postural, Exame osteomuscular
+                        </div>
+                        <div class="orientacao-item">
+                            <strong>Altura/Espaço Confinado:</strong> EEG, ECG, Acuidade visual, Glicemia, Hemograma, RX Tórax PA OIT, Espirometria, Exame psicológico, Teste de esforço
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function removerGHE(numero) {
+            const gheElement = document.getElementById(`ghe_${numero}`);
+            if (gheElement && confirm('Tem certeza que deseja remover este GHE?')) {
+                gheElement.remove();
+            }
+        }
+
+        function toggleRiscosSection(tipoPerigo, numeroGHE) {
+            const checkbox = document.getElementById(`perigo_${tipoPerigo}_${numeroGHE}`);
+            const riscosSection = document.getElementById(`riscos_${tipoPerigo}_${numeroGHE}`);
+            
+            if (checkbox && riscosSection) {
+                if (checkbox.checked) {
+                    riscosSection.style.display = 'block';
+                } else {
+                    riscosSection.style.display = 'none';
+                    // Desmarcar todos os riscos quando desmarcar o perigo
+                    const riscosCheckboxes = riscosSection.querySelectorAll('input[type="checkbox"]');
+                    riscosCheckboxes.forEach(cb => cb.checked = false);
+                    const textarea = riscosSection.querySelector('textarea');
+                    if (textarea) textarea.value = '';
+                }
+            }
+        }
+
+        async function salvarEmpresa() {
+            // Verificar se é usuário de recepção
+            if (currentUser && currentUser.role === 'recepcao') {
+                showMessage('Acesso negado! Você tem permissão apenas para consulta.');
+                return;
+            }
+
+            const cnpj = document.getElementById('cnpj').value.trim();
+            const nome = document.getElementById('nomeEmpresa').value.trim();
+            const dataElaboracao = document.getElementById('dataElaboracao').value;
+
+            if (!cnpj || !nome || !dataElaboracao) {
+                showMessage('CNPJ, Nome da empresa e Data de elaboração são obrigatórios!');
+                return;
+            }
+
+            // Coletar todos os GHEs
+            const ghes = {};
+            const gheElements = document.querySelectorAll('.ghe-dinamico');
+            
+            if (gheElements.length === 0) {
+                showMessage('Adicione pelo menos um GHE!');
+                return;
+            }
+
+            for (let ghe of gheElements) {
+                const gheId = ghe.id.split('_')[1];
+                const nomeGHEElement = document.getElementById(`nome_ghe_${gheId}`);
+                
+                if (!nomeGHEElement || !nomeGHEElement.value.trim()) {
+                    showMessage('Todos os GHEs devem ter um nome!');
+                    return;
+                }
+
+                const nomeGHE = nomeGHEElement.value.trim();
+                
+                // Coletar perigos e riscos para este GHE
+                const perigosERiscos = coletarPerigosERiscosGHE(gheId);
+
+                // Coletar exames para este GHE
+                const exames = coletarExamesGHE(gheId);
+
+                ghes[nomeGHE] = {
+                    perigos: perigosERiscos.perigos,
+                    riscos: perigosERiscos.riscos,
+                    exames: exames
+                };
+            }
+
+            // Criar/Atualizar empresa
+            const empresaData = {
+                cnpj: cnpj,
+                nome: nome,
+                dataElaboracao: dataElaboracao,
+                ghe: ghes,
+                dataAtualizacao: new Date().toISOString(),
+                criadoPor: currentUser ? currentUser.username : 'sistema'
+            };
+
+            try {
+                if (modoEdicao && empresaEditando) {
+                    // Atualizar empresa existente
+                    const empresaRef = doc(db, 'empresas', empresaEditando);
+                    await updateDoc(empresaRef, empresaData);
+                    showMessage('Empresa atualizada com sucesso!', 'success');
+                } else {
+                    // Verificar se CNPJ já existe
+                    const empresasCol = collection(db, 'empresas');
+                    const q = query(empresasCol, where("cnpj", "==", cnpj));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        showMessage('CNPJ já cadastrado!');
+                        return;
+                    }
+
+                    // Criar nova empresa
+                    empresaData.dataCriacao = new Date().toISOString();
+                    await addDoc(empresasCol, empresaData);
+                    showMessage('Empresa cadastrada com sucesso!', 'success');
+                }
+                
+                cancelarCadastro();
+                pesquisarEmpresas();
+            } catch (error) {
+                console.error('Erro ao salvar empresa:', error);
+                showMessage('Erro ao salvar empresa: ' + error.message);
+            }
+        }
+
+        function coletarPerigosERiscosGHE(gheId) {
+            const perigos = [];
+            const riscos = {};
+            
+            const tiposPerigos = ['acidentes', 'ergonomicos', 'fisicos', 'biologicos', 'quimicos'];
+            
+            tiposPerigos.forEach(tipo => {
+                const perigoCheckbox = document.getElementById(`perigo_${tipo}_${gheId}`);
+                if (perigoCheckbox && perigoCheckbox.checked) {
+                    perigos.push(tipo);
+                    
+                    // Coletar riscos específicos deste perigo
+                    const riscosDoTipo = [];
+                    const riscosCheckboxes = document.querySelectorAll(`#riscos_${tipo}_${gheId} input[type="checkbox"]`);
+                    riscosCheckboxes.forEach(cb => {
+                        if (cb.checked) {
+                            riscosDoTipo.push({
+                                tipo: cb.value,
+                                nome: cb.nextElementSibling.textContent
+                            });
+                        }
+                    });
+                    
+                    // Coletar outros riscos do textarea
+                    const outrosTextarea = document.getElementById(`outros_${tipo}_${gheId}`);
+                    const outrosRiscos = outrosTextarea ? outrosTextarea.value.trim() : '';
+                    
+                    if (riscosDoTipo.length > 0 || outrosRiscos) {
+                        riscos[tipo] = {
+                            especificos: riscosDoTipo,
+                            outros: outrosRiscos
+                        };
+                    }
+                }
+            });
+            
+            return { perigos, riscos };
+        }
+
+        function coletarExamesGHE(gheId) {
+            return {
+                admissional: {
+                    exames: coletarExamesPorTipoGHE([
+                        'exam_adm_clinico', 'exam_adm_audio', 'exam_adm_acuidade', 
+                        'exam_adm_eletro', 'exam_adm_raio', 'exam_adm_espiro', 'exam_adm_hemograma'
+                    ], gheId),
+                    outros: document.getElementById(`outros_exames_adm_${gheId}`)?.value.trim() || ''
+                },
+                periodico: {
+                    exames: coletarExamesPorTipoGHE([
+                        'exam_per_clinico', 'exam_per_audio', 'exam_per_acuidade', 
+                        'exam_per_eletro', 'exam_per_espiro', 'exam_per_sangue'
+                    ], gheId),
+                    periodicidade: document.getElementById(`periodicidade_exames_${gheId}`)?.value || 'anual',
+                    outros: document.getElementById(`outros_exames_per_${gheId}`)?.value.trim() || ''
+                },
+                retorno: {
+                    exames: coletarExamesPorTipoGHE([
+                        'exam_ret_clinico', 'exam_ret_complementares', 'exam_ret_avaliacoes'
+                    ], gheId),
+                    outros: document.getElementById(`outros_exames_ret_${gheId}`)?.value.trim() || ''
+                },
+                mudanca: {
+                    exames: coletarExamesPorTipoGHE([
+                        'exam_mud_periodico', 'exam_mud_adicionar', 'exam_mud_especifico'
+                    ], gheId),
+                    outros: document.getElementById(`outros_exames_mud_${gheId}`)?.value.trim() || ''
+                },
+                demissional: {
+                    exames: coletarExamesPorTipoGHE([
+                        'exam_dem_clinico', 'exam_dem_audio', 'exam_dem_complementares'
+                    ], gheId),
+                    outros: document.getElementById(`outros_exames_dem_${gheId}`)?.value.trim() || ''
+                }
+            };
+        }
+
+        function coletarExamesPorTipoGHE(ids, gheId) {
+            const exames = [];
+            ids.forEach(id => {
+                const checkbox = document.getElementById(`${id}_${gheId}`);
+                if (checkbox && checkbox.checked) {
+                    exames.push(checkbox.value);
+                }
+            });
+            return exames;
+        }
+
+        async function pesquisarEmpresas() {
+            const cnpjBusca = document.getElementById('searchCNPJ').value.trim().toLowerCase();
+            const nomeBusca = document.getElementById('searchEmpresa').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('resultsSection');
+
+            try {
+                resultsDiv.innerHTML = '<div class="loading">🔄 Carregando empresas...</div>';
+                
+                const empresasCol = collection(db, 'empresas');
+                const empresasSnapshot = await getDocs(empresasCol);
+                
+                let empresas = [];
+                empresasSnapshot.forEach((doc) => {
+                    empresas.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // Filtrar resultados
+                let resultados = empresas;
+
+                if (cnpjBusca) {
+                    resultados = resultados.filter(emp => 
+                        emp.cnpj && emp.cnpj.toLowerCase().includes(cnpjBusca)
+                    );
+                }
+
+                if (nomeBusca) {
+                    resultados = resultados.filter(emp => 
+                        emp.nome && emp.nome.toLowerCase().includes(nomeBusca)
+                    );
+                }
+
+                if (resultados.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="no-results">
+                            <h3>Nenhum resultado encontrado</h3>
+                            <p>Tente ajustar os critérios de busca ou cadastre uma nova empresa.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<h2 style="margin-bottom: 20px; color: #495057;">📊 Resultados da Pesquisa</h2>';
+                
+                resultados.forEach(empresa => {
+                    html += criarCardEmpresa(empresa);
+                });
+
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Erro ao pesquisar empresas:', error);
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <h3>Erro ao carregar empresas</h3>
+                        <p>Erro: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function criarCardEmpresa(empresa) {
+            const dataElaboracao = empresa.dataElaboracao ? 
+                new Date(empresa.dataElaboracao).toLocaleDateString('pt-BR') : 
+                'Não informada';
+            
+            // Determinar quais botões mostrar baseado no nível de acesso
+            let botoesAcao = '';
+            if (currentUser && currentUser.role === 'gestao') {
+                botoesAcao = `
+                    <button class="btn btn-success" onclick="gerarGrade('${empresa.id}')" style="margin-right: 10px;">📋 Gerar Grade</button>
+                    <button class="btn btn-warning" onclick="editarEmpresa('${empresa.id}')">✏️ Editar</button>
+                    <button class="btn btn-danger" onclick="excluirEmpresa('${empresa.id}')">🗑️ Excluir</button>
+                `;
+            } else {
+                botoesAcao = `
+                    <button class="btn btn-success" onclick="gerarGrade('${empresa.id}')">📋 Visualizar Grade</button>
+                `;
+            }
+            
+            let cardHtml = `
+                <div class="empresa-card">
+                    <div class="empresa-header">
+                        <div class="empresa-info">
+                            <h3>${empresa.nome}</h3>
+                            <p><strong>CNPJ:</strong> ${empresa.cnpj}</p>
+                            <p><strong>Data de Elaboração do PCMSO:</strong> ${dataElaboracao}</p>
+                            <p><strong>Total de GHEs:</strong> ${empresa.ghe ? Object.keys(empresa.ghe).length : 0}</p>
+                            ${empresa.criadoPor ? `<p><strong>Criado por:</strong> ${empresa.criadoPor}</p>` : ''}
+                        </div>
+                        <div>
+                            ${botoesAcao}
+                        </div>
+                    </div>
+                    
+                    <div class="ghe-list">
+            `;
+
+            if (empresa.ghe) {
+    // 1️⃣ Primeiro, vamos organizar os GHEs em ordem alfabética
+ const ghesOrdenados = Object.keys(empresa.ghe).sort((a, b) => {
+    // Pegar só os números, ignorando TUDO o resto
+    const numeroA = parseInt(a.replace(/[^\d]/g, '')) || 999;
+    const numeroB = parseInt(b.replace(/[^\d]/g, '')) || 999;
+    return numeroA - numeroB;
+});
+    
+    ghesOrdenados.forEach(gheNome => {
+        const ghe = empresa.ghe[gheNome];
+        
+        cardHtml += `
+            <div class="ghe-card">
+                <div class="ghe-title">📋 ${gheNome}</div>
+                
+    
+                
+                <!-- 3️⃣ SEÇÃO DE RISCOS ESPECÍFICOS -->
+        `;
+
+        if (ghe.riscos && Object.keys(ghe.riscos).length > 0) {
+            cardHtml += `
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #495057; font-size: 13px;">🎯 RISCOS ESPECÍFICOS:</strong>
+                    <div class="riscos-detalhes" style="margin-top: 8px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 12px;">
+            `;
+            
+            // Organizar riscos na mesma ordem dos perigos
+            const ordemPerigos = ['fisicos', 'quimicos', 'biologicos', 'ergonomicos', 'acidentes'];
+            const riscosOrdenados = Object.keys(ghe.riscos).sort((a, b) => {
+                const indexA = ordemPerigos.indexOf(a);
+                const indexB = ordemPerigos.indexOf(b);
+                return indexA - indexB;
+            });
+            
+            riscosOrdenados.forEach(tipoPerigo => {
+                const riscosDoTipo = ghe.riscos[tipoPerigo];
+                const perigoNome = {
+                    'acidentes': '🔵 Acidentes',
+                    'ergonomicos': '🟡 Ergonômicos',
+                    'fisicos': '🟢 Físicos', 
+                    'biologicos': '🟠 Biológicos',
+                    'quimicos': '🔴 Químicos'
+                };
+                
+                cardHtml += `<div style="margin-bottom: 8px;"><strong>${perigoNome[tipoPerigo]}:</strong><br>`;
+                
+                if (riscosDoTipo.especificos && riscosDoTipo.especificos.length > 0) {
+                    const nomes = riscosDoTipo.especificos.map(r => r.nome);
+                    cardHtml += `<span style="margin-left: 15px; color: #6c757d;">• ${nomes.join(', ')}</span><br>`;
+                }
+                
+                if (riscosDoTipo.outros) {
+                    cardHtml += `<span style="margin-left: 15px; color: #6c757d;">• ${riscosDoTipo.outros}</span><br>`;
+                }
+                
+                cardHtml += '</div>';
+            });
+            
+            cardHtml += `
+                    </div>
+                </div>
+            `;
+        }
+        
+        
+
+                   
+                    
+                    cardHtml += `<div class="exames-list"><strong>Exames:</strong><br>`;
+
+                   if (ghe.exames) {
+                     const ordemExames = ['admissional', 'periodico', 'demissional', 'retorno', 'mudanca'];
+  
+   
+   
+   
+                     Object.keys(ghe.exames).forEach(tipoExame => {
+        const exameData = ghe.exames[tipoExame];
+        
+        const tipoNome = {
+            'admissional': 'Admissional',
+            'periodico': 'Periódico',
+            'retorno': 'Retorno ao Trabalho',
+            'mudanca': 'Mudança de Risco',
+            'demissional': 'Demissional'
+        };
+        
+        // ✨ AQUI ESTÁ A MÁGICA! Vamos mostrar TODOS os exames
+        let temExames = false;
+        let listaExames = [];
+        
+        // 1️⃣ Primeiro, pegamos os exames selecionados nos checkboxes
+        if (exameData.exames && exameData.exames.length > 0) {
+            listaExames = [...exameData.exames]; // Copia os exames
+            temExames = true;
+        }
+        
+        // 2️⃣ Depois, pegamos os "outros exames" que você digitou
+        if (exameData.outros && exameData.outros.trim()) {
+            const outrosExames = exameData.outros
+                .split(',')                    // Separa por vírgula
+                .map(exame => exame.trim())   // Remove espaços
+                .filter(exame => exame.length > 0); // Remove vazios
+            
+            listaExames = [...listaExames, ...outrosExames]; // Junta tudo
+            temExames = true;
+        }
+        
+        // 3️⃣ Se tem exames, mostra eles bonitinho
+        if (temExames) {
+            cardHtml += `<div style="margin-bottom: 10px;">
+                <strong>${tipoNome[tipoExame]}:</strong><br>
+                • ${listaExames.join('<br>• ')}<br>
+            `;
+            
+            // 4️⃣ Se for periódico, mostra a periodicidade
+            if (tipoExame === 'periodico' && exameData.periodicidade) {
+                const periodicidadeNome = {
+                    'anual': 'Anual',
+                    'semestral': 'Semestral', 
+                    'bienal': 'Bienal',
+                    'personalizada': 'Personalizada'
+                };
+                cardHtml += `<em>Periodicidade: ${periodicidadeNome[exameData.periodicidade] || exameData.periodicidade}</em><br>`;
+            }
+            
+            cardHtml += '</div>';
+        }
+    });
+} else {
+    cardHtml += 'Nenhum exame definido';
+}
+
+                    cardHtml += '</div></div>';
+                });
+            }
+
+            cardHtml += '</div></div>';
+
+            return cardHtml;
+        }
+
+        async function gerarGrade(empresaId) {
+            try {
+                const empresasCol = collection(db, 'empresas');
+                const empresasSnapshot = await getDocs(empresasCol);
+                
+                let empresa = null;
+                empresasSnapshot.forEach((doc) => {
+                    if (doc.id === empresaId) {
+                        empresa = { id: doc.id, ...doc.data() };
+                    }
+                });
+
+                if (!empresa) {
+                    showMessage('Empresa não encontrada!');
+                    return;
+                }
+
+                const gradeBody = document.getElementById('gradeBody');
+                
+                const dataElaboracao = empresa.dataElaboracao ? 
+                    new Date(empresa.dataElaboracao).toLocaleDateString('pt-BR') : 
+                    'Não informada';
+                
+                let html = `
+                    <div class="grade-empresa-info">
+                        <h3>${empresa.nome}</h3>
+                        <p><strong>CNPJ:</strong> ${empresa.cnpj}</p>
+                        <p><strong>Data de Elaboração do PCMSO:</strong> ${dataElaboracao}</p>
+                        <p><strong>Data de Geração da Grade:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+                        ${currentUser && currentUser.role === 'recepcao' ? '<p style="color: #dc3545;"><strong>⚠️ Visualização em modo somente leitura</strong></p>' : ''}
+                    </div>
+                `;
+
+                // Criar tabela da grade
+                html += `
+                    <table class="grade-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 200px;">GRUPO HOMOGÊNEO DE EXPOSIÇÃO (GHE)</th>
+                                <th colspan="5">PERIODICIDADE DOS EXAMES OCUPACIONAIS</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 140px;">ADMISSIONAL</th>
+                                <th style="width: 140px;">PERIÓDICO</th>
+                                <th style="width: 140px;">RETORNO AO TRABALHO</th>
+                                <th style="width: 140px;">MUDANÇA DE RISCO OCUPACIONAL</th>
+                                <th style="width: 140px;">DEMISSIONAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                // Processar cada GHE
+                if (empresa.ghe) {
+               Object.keys(empresa.ghe).sort((a, b) => {
+    // Pegar só os números, ignorando TUDO o resto
+    const numeroA = parseInt(a.replace(/[^\d]/g, '')) || 999;
+    const numeroB = parseInt(b.replace(/[^\d]/g, '')) || 999;
+    return numeroA - numeroB;
+}).forEach(gheNome => {
+    const ghe = empresa.ghe[gheNome];  // ← ADICIONE ESTA LINHA
+    
+    html += `
+        <tr>
+            <td class="ghe-header">${gheNome}</td>
+            <td class="exame-cell">
+    `;                    
+
+                        
+
+                      const adicionarExamesNaGrade = (tipoExame) => {
+    let examesHtml = '';
+    if (ghe.exames && ghe.exames[tipoExame]) {
+        if (ghe.exames[tipoExame].exames && ghe.exames[tipoExame].exames.length > 0) {
+            ghe.exames[tipoExame].exames.forEach(exame => {
+                examesHtml += `<div>• ${exame}</div>`;
+            });
+        }
+        
+        // ESTA É A PARTE MÁGICA! ✨
+        if (ghe.exames[tipoExame].outros) {
+            const outrosExames = ghe.exames[tipoExame].outros.split(',')
+                .map(exame => exame.trim())
+                .filter(exame => exame.length > 0);
+            
+            outrosExames.forEach(exame => {
+                examesHtml += `<div>• ${exame}</div>`;
+            });
+        }
+        
+        if (tipoExame === 'periodico' && ghe.exames[tipoExame].periodicidade) {
+            const periodicidadeNome = {
+                'anual': 'Anual',
+                'semestral': 'Semestral',
+                'bienal': 'Bienal',
+                'personalizada': 'Personalizada'
+            };
+            examesHtml += `<div class="periodicidade-info">Periodicidade: ${periodicidadeNome[ghe.exames[tipoExame].periodicidade] || ghe.exames[tipoExame].periodicidade}</div>`;
+        }
+        
+        if ((!ghe.exames[tipoExame].exames || ghe.exames[tipoExame].exames.length === 0) && 
+            !ghe.exames[tipoExame].outros) {
+            examesHtml += '<span style="color: #666; font-style: italic;">Não definido</span>';
+        }
+    } else {
+        examesHtml += '<span style="color: #666; font-style: italic;">Não definido</span>';
+    }
+    return examesHtml;
+};
+                        // Adicionar cada tipo de exame
+                        html += adicionarExamesNaGrade('admissional');
+                        html += `</td><td class="exame-cell">`;
+                        html += adicionarExamesNaGrade('periodico');
+                        html += `</td><td class="exame-cell">`;
+                        html += adicionarExamesNaGrade('retorno');
+                        html += `</td><td class="exame-cell">`;
+                        html += adicionarExamesNaGrade('mudanca');
+                        html += `</td><td class="exame-cell">`;
+                        html += adicionarExamesNaGrade('demissional');
+                        html += `</td></tr>`;
+                    });
+                }
+
+                html += `
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <h4 style="margin-bottom: 20px; color: #495057; text-align: center;">⚠️ PERIGOS E RISCOS IDENTIFICADOS POR GHE</h4>
+                        
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="background: #495057; color: white;">
+                                    <th style="border: 1px solid #495057; padding: 10px; text-align: left;">GHE</th>
+                                    <th style="border: 1px solid #495057; padding: 10px; text-align: left;">PERIGOS IDENTIFICADOS</th>
+                                    <th style="border: 1px solid #495057; padding: 10px; text-align: left;">RISCOS ESPECÍFICOS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                // Adicionar dados dos GHEs na tabela
+                if (empresa.ghe) {
+                    Object.keys(empresa.ghe).forEach(gheNome => {
+                        const ghe = empresa.ghe[gheNome];
+                        
+                        html += `
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="border: 1px solid #dee2e6; padding: 12px; font-weight: bold; background: #f8f9fa;">${gheNome}</td>
+                                <td style="border: 1px solid #dee2e6; padding: 12px;">
+                        `;
+                        
+                        // Mostrar perigos com badges coloridos
+                        if (ghe.perigos && ghe.perigos.length > 0) {
+                            ghe.perigos.forEach(perigo => {
+                                const perigoNome = {
+                                    'acidentes': 'ACIDENTES',
+                                    'ergonomicos': 'ERGONÔMICOS',
+                                    'fisicos': 'FÍSICOS',
+                                    'biologicos': 'BIOLÓGICOS',
+                                    'quimicos': 'QUÍMICOS'
+                                };
+                                
+                                html += `<span class="perigo-badge perigo-${perigo}" style="display: inline-block; margin: 2px 3px 2px 0; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">${perigoNome[perigo]}</span>`;
+                            });
+                        } else {
+                            html += '<em style="color: #666;">Nenhum perigo identificado</em>';
+                        }
+                        
+                        html += `
+                                </td>
+                                <td style="border: 1px solid #dee2e6; padding: 12px;">
+                        `;
+                        
+                        // Mostrar riscos específicos
+                        if (ghe.riscos && Object.keys(ghe.riscos).length > 0) {
+                            Object.keys(ghe.riscos).forEach(tipoPerigo => {
+                                const riscosDoTipo = ghe.riscos[tipoPerigo];
+                                const perigoNome = {
+                                    'acidentes': 'Acidentes',
+                                    'ergonomicos': 'Ergonômicos',
+                                    'fisicos': 'Físicos',
+                                    'biologicos': 'Biológicos',
+                                    'quimicos': 'Químicos'
+                                };
+                                
+                                if (riscosDoTipo.especificos && riscosDoTipo.especificos.length > 0) {
+                                    html += `<div style="margin-bottom: 8px;"><strong style="color: #495057;">${perigoNome[tipoPerigo]}:</strong><br>`;
+                                    riscosDoTipo.especificos.forEach(risco => {
+                                        html += `<span style="font-size: 11px; margin-left: 8px;">• ${risco.nome}</span><br>`;
+                                    });
+                                    html += '</div>';
+                                }
+                                if (riscosDoTipo.outros) {
+                                    html += `<div style="margin-bottom: 8px;"><strong style="color: #495057;">${perigoNome[tipoPerigo]} (Outros):</strong><br>`;
+                                    html += `<span style="font-size: 11px; margin-left: 8px;">• ${riscosDoTipo.outros}</span></div>`;
+                                }
+                            });
+                        } else {
+                            html += '<em style="color: #666;">Nenhum risco específico identificado</em>';
+                        }
+                        
+                        html += `
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                html += `
+                        </tbody>
+                    </table>
+                </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px; font-size: 11px; color: #1565c0;">
+                        <p><strong>Observações Importantes:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Esta grade foi gerada automaticamente com base nos dados cadastrados no sistema.</li>
+                            <li>Sempre consulte um médico do trabalho qualificado para validação dos exames.</li>
+                            <li>Os exames devem seguir as normas regulamentadoras vigentes (NR-07, NR-09, etc.).</li>
+                            <li>Periodicidade pode variar conforme idade do trabalhador e exposição aos riscos.</li>
+                            ${currentUser && currentUser.role === 'recepcao' ? '<li><strong>Visualização em modo somente leitura para usuários de recepção.</strong></li>' : ''}
+                        </ul>
+                    </div>
+                `;
+
+                gradeBody.innerHTML = html;
+                document.getElementById('gradeModal').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Erro ao gerar grade:', error);
+                showMessage('Erro ao gerar grade: ' + error.message);
+            }
+        }
+
+        function fecharGrade() {
+            document.getElementById('gradeModal').style.display = 'none';
+        }
+
+        function imprimirGrade() {
+            window.print();
+        }
+
+        async function excluirEmpresa(empresaId) {
+            // Verificar se é usuário de recepção
+            if (currentUser && currentUser.role === 'recepcao') {
+                showMessage('Acesso negado! Você tem permissão apenas para consulta.');
+                return;
+            }
+
+            if (confirm('Tem certeza que deseja excluir esta empresa?')) {
+                try {
+                    await deleteDoc(doc(db, 'empresas', empresaId));
+                    showMessage('Empresa excluída com sucesso!', 'success');
+                    pesquisarEmpresas();
+                } catch (error) {
+                    console.error('Erro ao excluir empresa:', error);
+                    showMessage('Erro ao excluir empresa: ' + error.message);
+                }
+            }
+        }
+
+        // Fechar modal clicando fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('gradeModal');
+            if (event.target === modal) {
+                fecharGrade();
+            }
+        }
+
+        // Verificar se há usuário logado ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                currentUser = user;
+                
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('sistemaPrincipal').style.display = 'block';
+                
+                configurarInterface(user);
+                pesquisarEmpresas();
+            }
+
+            // Definir data padrão como hoje
+            document.getElementById('dataElaboracao').value = new Date().toISOString().split('T')[0];
+        });
+
+        // Permitir busca com Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (e.target.id === 'searchCNPJ' || e.target.id === 'searchEmpresa') {
+                    pesquisarEmpresas();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+                
